@@ -2,6 +2,8 @@
 
 namespace controllers;
 
+use PDO;
+
 class BaseController
 {
     // Connection
@@ -20,7 +22,7 @@ class BaseController
 
     // List ALL
     public function listAll($conditions){
-        $keys = array_keys($this->fields);
+        $keys = selectList;
         $query = "SELECT $keys 
                     FROM  $this->db_table  
                     ";
@@ -62,39 +64,44 @@ class BaseController
         return false;
     }
 
+    /***
+     * @return string
+     */
+    private  function  selectList(){
+        return implode(",",array_keys($this->fields));
+    }
     // UPDATE
+
+    /***
+     * @return mixed
+     */
     public function view(){
-        $sqlQuery = "SELECT
-                        id, 
-                        name, 
-                        email, 
-                        age, 
-                        designation, 
-                        created
+        $keys = selectList;
+        $query = "SELECT 
+                        $keys
                       FROM
                         ". $this->db_table ."
                     WHERE 
-                       id = ?
+                       $this->primary_key = ?
                     LIMIT 0,1";
 
-        $stmt = $this->conn->prepare($sqlQuery);
+        $stmt = $this->conn->prepare($query);
 
         $stmt->bindParam(1, $this->codeClient);
 
         $stmt->execute();
 
-        $dataRow = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        $this->name = $dataRow['name'];
-        $this->email = $dataRow['email'];
-        $this->age = $dataRow['age'];
-        $this->designation = $dataRow['designation'];
-        $this->created = $dataRow['created'];
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     // UPDATE
-    public function update(Array attributes){
-        $sqlQuery = "UPDATE
+
+    /***
+     * @param array attributes
+     * @return bool
+     */
+    public function update(  $attributes){
+        $query = "UPDATE
                         ". $this->db_table ."
                     SET
                         name = :name, 
@@ -105,7 +112,7 @@ class BaseController
                     WHERE 
                         id = :id";
 
-        $stmt = $this->conn->prepare($sqlQuery);
+        $stmt = $this->conn->prepare($query);
 
         $this->name=htmlspecialchars(strip_tags($this->name));
         $this->email=htmlspecialchars(strip_tags($this->email));

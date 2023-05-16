@@ -7,19 +7,11 @@ use classes\Client;
 class ClientController extends BaseController
 {
     protected $db_table = "client";
+    protected $primary_key = "code_client";
     // Db connection
-    public function __construct($db){
-        $this->conn = $db;
-    }
+    public function __construct( ){
 
-    // GET ALL
-    public function listeClients(){
-        $sqlQuery = "SELECT id, name, email, age, designation, created FROM " . $this->db_table . "";
-        $stmt = $this->conn->prepare($sqlQuery);
-        $stmt->execute();
-        return $stmt;
     }
-
     // CREATE
     public function ajouClient(){
         $sqlQuery = "INSERT INTO
