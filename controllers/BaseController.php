@@ -13,16 +13,20 @@ class BaseController
     protected $db_table  ;
     protected $primary_key  ;
     protected  $fields = [];
+    protected  $attributes = [];
 
 // Db connection
     public function __construct($db){
         $this->conn = $db;
     }
-
+    public function attributes () {
+        $attributes = get_object_vars($this);
+    }
 
     // List ALL
     public function listAll($conditions){
-        $keys = selectList;
+        $keys = self::selectList();
+       self::attributes () ;
         $query = "SELECT $keys 
                     FROM  $this->db_table  
                     ";
@@ -34,17 +38,20 @@ class BaseController
         }
         $stmt = $this->conn->prepare($query);
         $stmt->execute($conditions);
-        return $stmt;
+        $result = $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
+        return $result;
     }
 // CREATE
-    public function add($attributes){
+    public function add(){
+        self::attributes () ;
         $query = "INSERT INTO
                         ". $this->db_table ."
                         VALUES(
                         ";
         $params = [];
-        if(is_array($attributes)){
-            foreach ($attributes as $key => $value){
+
+        if(is_array($this->attributes)){
+            foreach ($this->attributes as $key => $value){
                 if(!empty($value) ){
                     $query .= " $key = :$key
                 ";
@@ -76,7 +83,7 @@ class BaseController
      * @return mixed
      */
     public function view(){
-        $keys = selectList;
+        $keys = self::selectList();
         $query = "SELECT 
                         $keys
                       FROM
