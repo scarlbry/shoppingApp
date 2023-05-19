@@ -12,8 +12,27 @@ class Client extends BaseController
     public $prenoms;
     public $email;
     public $dateNaiss;
-    public $created;
-    public $updated;
+    public $created_at;
+    public $updated_at;
+
+
+    protected $db_table = "client";
+    protected $primary_key = "code_client";
+    protected $fields = [
+        "nom" => "Nom",
+        "prenoms" => "Prénoms",
+        "email" => "Nom",
+        "dateNaiss" => "Nom",
+        "created_at" => "Nom",
+        "updated_at" => "Nom",
+        "codeClient" => "Code du client",
+    ];
+
+    public function fromArray(Array $properties=array()){
+//        foreach($properties as $key => $value){
+//            $this->{$key} = $value;
+//        }
+    }
 
     /**
      * @param $codeClient

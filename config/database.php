@@ -5,7 +5,7 @@ namespace config;
 
     class Database {
         private $host = "127.0.0.1";
-        private $database_name = "shoppingapp";
+        private $dbName = "shoppingapp";
         private $username = "root";
         private $password = "";
 
@@ -14,7 +14,8 @@ namespace config;
         public function getConnection(){
             $this->conn = null;
             try{
-                $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->database_name, $this->username, $this->password);
+                $this->conn = new PDO("mysql:host=" . $this->host . ";dbname=" . $this->dbName, $this->username, $this->password);
+                $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
                 $this->conn->exec("set names utf8");
             }catch(PDOException $exception){
                 echo "Erreur lors de la connexion à la base de données: " . $exception->getMessage();
@@ -23,3 +24,10 @@ namespace config;
         }
     }  
 ?>
+<?php
+$nbr1= 7;
+$nbr2 = 2;
+$nbr3 = '4';
+print $nbr1 + $nbr2.$nbr3;
+?>
+

@@ -19,14 +19,16 @@ class BaseController
     public function __construct($db){
         $this->conn = $db;
     }
+
     public function attributes () {
-        $attributes = get_object_vars($this);
+        $this->attributes = get_object_vars($this);
     }
 
     // List ALL
     public function listAll($conditions){
         $keys = self::selectList();
        self::attributes () ;
+
         $query = "SELECT $keys 
                     FROM  $this->db_table  
                     ";
@@ -38,28 +40,41 @@ class BaseController
         }
         $stmt = $this->conn->prepare($query);
         $stmt->execute($conditions);
-        $result = $stmt->fetchAll(PDO::FETCH_CLASS, self::class);
+        //echo $query;
+        $result = $stmt->fetchAll(PDO::FETCH_CLASS, get_class($this),[$this->conn]);
         return $result;
     }
 // CREATE
-    public function add(){
+    public function add($fields){
         self::attributes () ;
+        $insertList = "";
+        if(isset($fields) ){
+            $insertList =  implode(",",array_keys($fields));
+        }else{
+            $fields = $this->fields;
+            $insertList = self::selectList();
+        }
+
+
         $query = "INSERT INTO
-                        ". $this->db_table ."
+                        ". $this->db_table ." ($insertList)
                         VALUES(
                         ";
         $params = [];
 
         if(is_array($this->attributes)){
             foreach ($this->attributes as $key => $value){
-                if(!empty($value) ){
-                    $query .= " $key = :$key
+                if(isset ($fields[$key]) ) {
+                    if(!empty($value) ){
+                        $query .= " $key = :$key
                 ";
-                  $params[":$key"] =   htmlspecialchars(strip_tags($value));
+                        $params[":$key"] =   htmlspecialchars(strip_tags($value));
+                    }
+
                 }
             }
         }
-        $query .= "";
+        $query .= " )";
 
         $stmt = $this->conn->prepare($query);
 
